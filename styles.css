@@ -1,0 +1,94 @@
+/* styles.css */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #FFC0CB; /* 粉色背景 */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 80vh; /* 设置容器高度为视口高度的80% */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #FF69B4; /* 粉红色按钮 */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #FF1493;
+}
+
+#output {
+    flex: 1; /* 使输出区域占据剩余的空间 */
+    position: relative;
+    overflow-y: auto; /* 启用垂直滚动 */
+    margin-top: 20px;
+    padding-right: 10px; /* 为滚动条留出空间 */
+}
+
+#outputText {
+    white-space: pre-wrap;
+    background-color: #e9ecef;
+    padding: 15px;
+    border-radius: 4px;
+    min-height: 50px;
+    word-wrap: break-word; /* 处理长单词换行 */
+}
+
+#copyButton {
+    position: sticky;
+    bottom: 10px; /* 固定在底部 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 8px 12px;
+    background-color: #FF69B4;
+    z-index: 1;
+}
+
+#copyButton:hover {
+    background-color: #FF1493;
+}
