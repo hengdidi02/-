@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="欢迎来到我们的创意博客！">
+    <title>02资源网</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: auto; /* 允许页面滚动 */
+        }
+
+        /* 禁止页面主体滚动的样式 */
+        body.no-scroll {
+            overflow: hidden;
+        }
+
+        #startup-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #startup-video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        #skip-video {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #main-content {
+            height: 100%;
+            overflow-y: auto; /* 允许垂直滚动 */
+            padding-bottom: 200px;
+            display: none;
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: black;
+            z-index: -1;
+        }
+
+        #announcement {
+            position: fixed;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            color: red;
+            font-size: 1rem;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 2;
+        }
+
+        #announcement span {
+            display: inline-block;
+            animation: scroll 10s linear infinite;
+        }
+
+        @keyframes scroll {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
+
+        /* 资源区样式 */
+        #custom-links {
+            position: relative;
+            width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        #custom-links h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        #custom-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #custom-links ul li {
+            margin: 10px 0;
+        }
+
+        #custom-links ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        #custom-links ul li a:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 新增密码锁区域样式 */
+        #password-lock-section {
+            position: relative;
+            width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .lock-container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .lock-icon {
+            width: 4rem;
+            height: 4rem;
+            background: url('appIcon.png') center/cover no-repeat;
+            background-color: #1976d2;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            max-width: 220px;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border: none;
+            border-bottom: 2px solid #1976d2;
+            background: transparent;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease-out;
+        }
+
+        input[type="password"]:focus {
+            border-color: #2196f3;
+        }
+
+        button {
+            background: #2196f3;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 1rem auto 0;
+            transition: background 0.3s ease-out;
+        }
+
+        button:hover {
+            background: #1976d2;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.8rem;
+            margin-top: 0.8rem;
+            display: none;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
+            }
+            70% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+            }
+        }
+
+        #participant-section {
+            position: relative;
+            width: 100%;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            z-index: 2;
+            height: auto; /* 高度自适应 */
+        }
+
+        #participant-section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .participant-card {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            position: relative;
+            width: 100%;
+            background: none;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            padding: 10px;
+            text-align: center;
+            margin-left: -10px;
+        }
+
+        .participant-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 105%;
+            height: 110%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .participant-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .avatar-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .avatar-container img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .vertical-link-container {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            writing-mode: vertical-rl;
+            text-align: center;
+            padding-right: 50px;
+        }
+
+        /* 左上角三条横杆样式 */
+        #menu-icon {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            display: none; /* 默认隐藏 */
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 25px;
+            cursor: pointer;
+            z-index: 2000;
+        }
+
+        #menu-icon .bar {
+            width: 100%;
+            height: 4px;
+            background-color: white;
+            border-radius: 2px;
+        }
+
+        /* 半屏引导页 */
+        #side-menu {
+            position: fixed;
+            top: 0;
+            left: -50%;
+            width: 50%;
+            height: 100vh; /* 设置固定高度 */
+            background-color: rgba(0, 0, 0, 0.9);
+            transition: left 0.3s ease;
+            z-index: 1500;
+            overflow-y: auto; /* 允许上下滚动 */
+            overflow-x: hidden; /* 隐藏水平滚动条 */
+        }
+
+        #side-menu.active {
+            left: 0;
+        }
+
+        #side-menu .menu-content {
+            position: relative;
+            padding: 20px;
+            color: white;
+            z-index: 2;
+            height: calc(100vh - 40px); /* 减去顶部公告栏的高度 */
+            overflow-y: auto; /* 允许内容滚动 */
+        }
+
+        #side-menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #side-menu li {
+            margin: 15px 0;
+        }
+
+        #side-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        #side-menu a:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 引导页背景视频 */
+        #menu-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        /* 引导页滚动公告（单行显示） */
+        #menu-announcement {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 5px 0;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 3;
+        }
+
+        #menu-announcement span {
+            display: inline-block;
+            animation: scroll 8s linear infinite;
+        }
+
+        /* 新增：遮罩层，点击可关闭菜单 */
+        #menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1400;
+        }
+
+        #menu-overlay.active {
+            display: block;
+        }
+
+        /* 音乐播放器样式 */
+        #music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://music.yy.mba/Static/player/player.css">
+    <link rel="stylesheet" id="font-awesome-css" href="https://lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" media="all">
+</head>
+<body id="v1" style="overflow: auto;">
+    <!-- 三条横杆 -->
+    <div id="menu-icon">
+        <div id="v2" class="bar"></div>
+        <div id="v3" class="bar"></div>
+        <div id="v4" class="bar"></div>
+    </div>
+
+    <!-- 引导页 -->
+    <div id="side-menu">
+        <div id="menu-announcement">
+            <span id="v5">欢迎访问02资源网！全新内容已上线！官方通知群：633675884</span>
+        </div>
+        <video id="menu-video" autoplay muted loop>
+            <source id="v6" src="侧边栏.mp4" type="video/mp4">
+        </video>
+        <div id="v7" class="menu-content">
+            <h2 id="v8"></h2>
+            <ul id="v9">
+                <li id="v10"><a id="v11" href="https://snaptik.biz/zh-cn/youtube-to-mp4">TikTok</a></li>
+                <li id="v12"><a id="v13" href="https://douyinxz.com/">抖音去水印</a></li>
+                <li id="v14"><a id="v15" href="小姐姐.html">小姐姐</a></li>
+                <li id="v16"><a id="v17" href="小哥哥.html">小哥哥</a></li>
+                <li id="v18"><a id="v19" href="丝袜专场.html">丝袜专场</a></li>
+                <li id="v20"><a id="v21" href="https://uiverse.io/">UI元素库</a></li>
+                <li id="v22"><a id="v23" href="https://www.dora.run/">3D动画网站</a></li>
+                <li id="v24"><a id="v25" href="https://anitabi.cn/">动漫和电视剧现实场景</a></li>
+                <li id="v26"><a id="v27" href="https://youzisp.tv/">看剧追番</a></li>
+                <li id="v28"><a id="v29" href="ai对话.html">ai对话</a></li>
+                <li id="v30"><a id="v31" href="聊天机器人.html">聊天机器人</a></li>
+                <li id="v32"><a id="v33" href="文字复制器.html">文字复制器</a></li>
+                <li id="v34"><a id="v35" href="https://qm.qq.com/q/t7XVpENEQM" target="_blank">官方QQ群</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 遮罩层 -->
+    <div id="menu-overlay"></div>
+
+    <!-- 启动页面 -->
+    <div id="startup-container" style="display: flex;">
+        <video id="startup-video" autoplay muted>
+            <source id="v36" src="启动页.mp4" type="video/mp4">
+            您的浏览器不支持视频标签。
+        </video>
+        <button id="skip-video">跳过</button>
+    </div>
+
+    <div id="main-content" style="display: none;">
+        <div id="v37" class="avatar-container">
+            <img id="v38" src="置顶.jpg" alt="头像" class="avatar">
+        </div>
+
+        <div id="announcement">
+            <span id="v39">欢迎访问02资源网！最新公告：软件功能正在优化，欢迎体验！</span>
+        </div>
+
+        <!-- 资源区 -->
+        <div id="custom-links">
+            <h3 id="v40">免费区</h3>
+            <ul id="v41">
+                <li id="v42"><a id="v43" href="https://www.123684.com/s/R5DyVv-CK6Ph" target="_blank">游戏BUG测试</a></li>
+                <li id="v44"><a id="v45" href="https://www.123684.com/s/R5DyVv-NK6Ph" target="_blank">逆向教学</a></li>
+                <li id="v46"><a id="v47" href="https://www.123684.com/s/R5DyVv-OK6Ph" target="_blank">软件分享</a></li>
+                <li id="v48"><a id="v49" href="https://www.123684.com/s/R5DyVv-RK6Ph" target="_blank">大厂游戏辅助</a></li>
+                <li id="v50"><a id="v51" href="https://www.123684.com/s/R5DyVv-DK6Ph" target="_blank">游戏云盘</a></li>
+                <li id="v52"><a id="v53" href="https://qm.qq.com/q/gtqW8btcVq" target="_blank">02资源官方通知群</a></li>
+            </ul>
+        </div>
+
+        <!-- 新增密码锁区域 -->
+        <div id="password-lock-section">
+            <h1 id="v179">付费区域</h1>
+            <div id="v54" class="lock-container">
+                <div id="v55" class="lock-icon"></div>
+                <h2 id="v56">请输入密码</h2>
+                <input type="password" id="passwordInput" placeholder="密码" required>
+                <button id="v57" onclick="checkPassword()">解锁</button>
+                <p class="error-message" id="errorMessage"></p>
+            </div>
+        </div>
+
+        <!-- 参与人员区域 -->
+        <div id="participant-section">
+            <h2 id="v58">参与人员</h2>
+            <!-- 参与人员名片 1 -->
+            <div id="v59" class="participant-card">
+                <img id="v60" class="participant-avatar" src="02名片.jpg" alt="">
+                <div id="v61" class="participant-info">
+                    <h3 id="v62">02</h3>
+                    <p id="v63">软件作者 前端开发</p>
+                    <p id="v64">QQ: <span id="qq-info">2421159365</span></p>
+                </div>
+                <video id="v65" class="participant-background" autoplay loop muted>
+                    <source id="v66" src="哪吒.mp4" type="video/mp4">
+                </video>
+                <div id="v67" class="vertical-link-container">
+                    <a id="v68" href="https://qm.qq.com/q/yoizhkO97q" target="_blank">点击跳转</a>
+                </div>
+            </div>
+
+            <!-- 参与人员名片 2 -->
+            <div id="v69" class="participant-card">
+                <img id="v70" class="participant-avatar" src="我有一计.jpg" alt="">
+                <div id="v71" class="participant-info">
+                    <h3 id="v72">我有一计</h3>
+                    <p id="v73">让群主吃国潮外卖 简称一计哥</p>
+                    <p id="v74">QQ: <span id="qq-info">2112346619</span></p>
+                </div>
+                <video id="v75" class="participant-background" autoplay loop muted>
+                    <source id="v76" src="我有一计.mp4" type="video/mp4">
+                </video>
+                <div id="v77" class="vertical-link-container">
+                    <a id="v78" href="https://qm.qq.com/q/t7XVpENEQM" target="_blank">点击跳转</a>
+                </div>
+            </div>
+
+            <!-- 参与人员名片 3 -->
+            <div id="v79" class="participant-card">
+                <img id="v80" class="participant-avatar" src="星星.jpg" alt="">
+                <div id="v81" class="participant-info">
+                    <h3 id="v82">星星</h3>
+                    <p id="v83">赞助商</p>
+                    <p id="v84">QQ: <span id="qq-info">1345473195</span></p>
+                </div>
+                <video id="v85" class="participant-background" autoplay loop muted>
+                    <source id="v86" src="星星.mp4" type="video/mp4">
+                </video>
+                <div id="v87" class="vertical-link-container">
+                    <a id="v88" href="https://qm.qq.com/q/gnd2v1TN2E" target="_blank">点击跳转</a>
+                </div>
+            </div>
+
+            <!-- 参与人员名片 4 -->
+            <div id="v89" class="participant-card">
+                <img id="v90" class="participant-avatar" src="留言墙.jpg" alt="">
+                <div id="v91" class="participant-info">
+                    <h3 id="v92">留言墙</h3>
+                    <p id="v93">需要什么找我 用不了找我反馈</p>
+                    <p id="v94">QQ: <span id="qq-info">2112346619</span></p>
+                </div>
+                <video id="v95" class="participant-background" autoplay loop muted>
+                    <source id="v96" src="留言墙.mp4" type="video/mp4">
+                </video>
+                <div id="v97" class="vertical-link-container">
+                    <a id="v98" href="https://qm.qq.com/q/JK2KWEWm8a" target="_blank">点击跳转</a>
+                </div>
+            </div>
+        </div>
+
+        <video id="v99" class="video-background" autoplay muted loop>
+            <source id="v100" src="背景视频.mp4" type="video/mp4">
+            您的浏览器不支持视频标签。
+        </video>
+        <div id="v101" class="content"></div>
+    </div>
+
+    <!-- 音乐播放器容器 -->
+    <div id="music-player"></div>
+
+    <!-- 加载 jQuery -->
+    <script src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- 加载音乐播放器脚本 -->
+    <script id="xplayer" src="https://music.yy.mba/Static/player/player.js" key="67817d800a83d" m="1"></script>
+
+    <!-- 初始化音乐播放器 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 确保音乐播放器脚本已加载
+            if (window.XPlayer) {
+                // 初始化音乐播放器
+                const player = new XPlayer({
+                    container: '#music-player', // 指定容器
+                    key: '67817d800a83d',      // 配置参数
+                    m: '1'
+                });
+                player.init(); // 初始化播放器
+            } else {
+                console.error('音乐播放器脚本未加载！');
+            }
+        });
+    </script>
+
+    <!-- 控制菜单和启动页面的脚本 -->
+    <script> 
+        document.addEventListener('DOMContentLoaded', () => {
+            const startupVideo = document.getElementById('startup-video');
+            const startupContainer = document.getElementById('startup-container');
+            const mainContent = document.getElementById('main-content');
+            const menuIcon = document.getElementById('menu-icon');
+            const sideMenu = document.getElementById('side-menu');
+            const menuOverlay = document.getElementById('menu-overlay');
+            const body = document.body;
+
+            const qqInfo = document.getElementById('qq-info');
+            const participantSection = document.getElementById('participant-section');
+
+            // 监测QQ信息是否为空，如果为空则隐藏整个参与人员区域
+            if (!qqInfo || !qqInfo.innerText.trim()) {
+                participantSection.style.display = 'none';
+            }
+
+            const showMainContent = () => {
+                startupContainer.style.display = 'none';
+                mainContent.style.display = 'block';
+                menuIcon.style.display = 'flex'; // 显示侧边栏按钮
+                document.body.style.overflow = 'auto';
+            };
+
+            // 视频播放结束后显示主内容和侧边栏按钮
+            startupVideo.onended = showMainContent;
+
+            // 跳过按钮点击事件
+            document.getElementById('skip-video').addEventListener('click', showMainContent);
+
+            // 侧边栏按钮点击事件
+            menuIcon.addEventListener('click', () => {
+                sideMenu.classList.add('active');
+                menuOverlay.classList.add('active');
+                body.classList.add('no-scroll'); // 禁止页面主体滚动
+            });
+
+            // 遮罩层点击事件
+            menuOverlay.addEventListener('click', () => {
+                sideMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                body.classList.remove('no-scroll'); // 恢复页面主体滚动
+            });
+        });
+    </script>
+
+    <!-- 密码锁逻辑 -->
+    <script>
+        const correctPassword = "1234"; // 设置正确的密码
+        const redirectUrl = "副页面.html"; // 设置跳转的目标页面
+
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (password === correctPassword) {
+                window.location.href = redirectUrl;
+            } else {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = '密码错误！';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 2000);
+            }
+        }
+    </script>
+
+    <!-- 预加载音效 -->
+    <audio id="跳过" src="测.mp3" preload="auto"></audio>
+    <audio id="侧边栏" src="测.mp3" preload="auto"></audio>
+    <audio id="TikTok" src="测.mp3" preload="auto"></audio>
+    <audio id="抖音去水印" src="测.mp3" preload="auto"></audio>
+    <audio id="没有" src="测试.mp3" preload="auto"></audio>
+    <audio id="1" src="测试.mp3" preload="auto"></audio>
+    <audio id="2" src="测试.mp3" preload="auto"></audio>
+    <audio id="3" src="测试.mp3" preload="auto"></audio>
+    <audio id="click-sound-9" src="测试.mp3" preload="auto"></audio>
+    <audio id="click-sound-10" src="测试.mp3" preload="auto"></audio>
+    <audio id="click-sound-11" src="测试.mp3" preload="auto"></audio>
+    <audio id="click-sound-12" src="测试.mp3" preload="auto"></audio>
+    <audio id="click-sound-13" src="测试.mp3" preload="auto"></audio>
+    <audio id="click-sound-14" src="测试.mp3" preload="auto"></audio>
+
+    <!-- 绑定音效 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 获取所有需要音效的按钮
+            const skipButton = document.getElementById('skip-video');
+            const menuIcon = document.getElementById('menu-icon');
+            const sideMenuLinks = document.querySelectorAll('#side-menu a');
+            const customLinks = document.querySelectorAll('#custom-links a');
+            const participantLinks = document.querySelectorAll('.vertical-link-container a');
+
+            // 为每个按钮绑定不同的音效
+            skipButton.addEventListener('click', () => {
+                document.getElementById('跳过').play();
+            });
+
+            menuIcon.addEventListener('click', () => {
+                document.getElementById('侧边栏').play();
+            });
+
+            sideMenuLinks.forEach((link, index) => {
+                link.addEventListener('click', () => {
+                    const soundId = link.textContent.trim(); // 根据链接文本匹配音效
+                    const sound = document.getElementById(soundId);
+                    if (sound) {
+                        sound.play();
+                    }
+                });
+            });
+
+            customLinks.forEach((link, index) => {
+                link.addEventListener('click', () => {
+                    const soundId = link.textContent.trim(); // 根据链接文本匹配音效
+                    const sound = document.getElementById(soundId);
+                    if (sound) {
+                        sound.play();
+                    }
+                });
+            });
+
+            participantLinks.forEach((link, index) => {
+                link.addEventListener('click', () => {
+                    const soundId = link.textContent.trim(); // 根据链接文本匹配音效
+                    const sound = document.getElementById(soundId);
+                    if (sound) {
+                        sound.play();
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- 雪花插件 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://qqbyh.cn/assets/js/snowflake.js"></script>
+    <script>
+        // 初始化雪花插件
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof Snowflakes !== 'undefined') {
+                const snowflakes = new Snowflakes({
+                    color: '#ffffff', // 雪花颜色
+                    count: 100,        // 雪花数量
+                    speed: 1.5,       // 雪花下落速度
+                    size: 5,          // 雪花大小
+                    wind: true,       // 是否启用风力效果
+                    zIndex: 2,        // 雪花层级
+                });
+            } else {
+                console.error('雪花插件未加载！');
+            }
+        });
+    </script>
+</body>
+</html>
